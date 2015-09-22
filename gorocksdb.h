@@ -28,3 +28,7 @@ extern void gorocksdb_mergeoperator_delete_value(void* state, const char* v, siz
 /* Slice Transform */
 
 extern rocksdb_slicetransform_t* gorocksdb_slicetransform_create(void* state);
+
+/* Hooked Env */
+
+extern rocksdb_env_t* gorocksdb_create_hooked_env(void* state);
