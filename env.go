@@ -1,6 +1,7 @@
 package gorocksdb
 
 /*
+#cgo CXXFLAGS: -std=c++11
 #include "rocksdb/c.h"
 #include "gorocksdb.h"
 */
