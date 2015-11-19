@@ -23,47 +23,58 @@ HookedEnv::~HookedEnv() { }
 Status HookedEnv::NewWritableFile(const std::string& fname,
                                   unique_ptr<WritableFile>* result,
                                   const EnvOptions& options) {
-
-  void* file_state = gorocksdb_env_new_writable_file(state_,
-      (char*)(fname.c_str()), fname.length());
-
   // Call down into wrapper subclass to get an actual delegate.
-  unique_ptr<WritableFile> delegate;
-  Status status = EnvWrapper::NewWritableFile(fname, &delegate, options);
+  Status status = EnvWrapper::NewWritableFile(fname, result, options);
 
-  // Return a hooked implementation of the |delegate|.
-  result->reset(new HookedWritableFile(file_state, std::move(delegate)));
+  if (status.ok()) {
+    // Wrap |result| with a hooked implementation.
+    void* file_state = gorocksdb_env_new_writable_file(state_,
+        (char*)(fname.c_str()), fname.length());
+    result->reset(new HookedWritableFile(file_state, std::move(*result)));
+  }
   return status;
 }
 
 Status HookedEnv::DeleteFile(const std::string& fname) {
-  gorocksdb_env_delete_file(state_, (char*)(fname.c_str()), fname.length());
-  return EnvWrapper::DeleteFile(fname);
+  Status status = EnvWrapper::DeleteFile(fname);
+  if (status.ok()) {
+    gorocksdb_env_delete_file(state_, (char*)(fname.c_str()), fname.length());
+  }
+  return status;
 }
 
 Status HookedEnv::DeleteDir(const std::string& dirname) {
-  gorocksdb_env_delete_dir(state_, (char*)(dirname.c_str()), dirname.length());
-  return EnvWrapper::DeleteDir(dirname);
+  Status status = EnvWrapper::DeleteDir(dirname);
+  if (status.ok()) {
+    gorocksdb_env_delete_dir(state_, (char*)(dirname.c_str()), dirname.length());
+  }
+  return status;
 }
 
 Status HookedEnv::RenameFile(const std::string& src,
                              const std::string& target) {
-  gorocksdb_env_rename_file(state_,
-      (char*)(src.c_str()),
-      src.length(),
-      (char*)(target.c_str()),
-      target.length());
-  return EnvWrapper::RenameFile(src, target);
+  Status result = EnvWrapper::RenameFile(src, target);
+  if (result.ok()) {
+    gorocksdb_env_rename_file(state_,
+        (char*)(src.c_str()),
+        src.length(),
+        (char*)(target.c_str()),
+        target.length());
+  }
+  return result;
 }
 
 Status HookedEnv::LinkFile(const std::string& src,
                            const std::string& target) {
-  gorocksdb_env_link_file(state_,
-      (char*)(src.c_str()),
-      src.length(),
-      (char*)(target.c_str()),
-      target.length());
-  return EnvWrapper::LinkFile(src, target);
+  Status result = EnvWrapper::LinkFile(src, target);
+  if (result.ok()) {
+    gorocksdb_env_link_file(state_,
+        (char*)(src.c_str()),
+        src.length(),
+        (char*)(target.c_str()),
+        target.length());
+  }
+  return result;
 }
 
 
