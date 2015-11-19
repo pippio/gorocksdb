@@ -23,26 +23,41 @@ HookedWritableFile::~HookedWritableFile() {
 }
 
 Status HookedWritableFile::Append(const Slice& data) {
-  gorocksdb_wf_append(state_, (char*)data.data(), data.size());
-  return WritableFileWrapper::Append(data);
+  Status status = WritableFileWrapper::Append(data);
+  if (status.ok()) {
+    gorocksdb_wf_append(state_, (char*)data.data(), data.size());
+  }
+  return status;
 }
 
 Status HookedWritableFile::Close() {
-  gorocksdb_wf_close(state_);
-  return WritableFileWrapper::Close();
+  Status status = WritableFileWrapper::Close();
+  if (status.ok()) {
+    gorocksdb_wf_close(state_);
+  }
+  return status;
 }
 
 Status HookedWritableFile::Sync() {
-  gorocksdb_wf_sync(state_);
-  return WritableFileWrapper::Sync();
+  Status status = WritableFileWrapper::Sync();
+  if (status.ok()) {
+    gorocksdb_wf_sync(state_);
+  }
+  return status;
 }
 
 Status HookedWritableFile::Fsync() {
-  gorocksdb_wf_fsync(state_);
-  return WritableFileWrapper::Fsync();
+  Status status = WritableFileWrapper::Fsync();
+  if (status.ok()) {
+    gorocksdb_wf_fsync(state_);
+  }
+  return status;
 }
 
 Status HookedWritableFile::RangeSync(off_t offset, off_t nbytes) {
-  gorocksdb_wf_range_sync(state_, offset, nbytes);
-  return WritableFileWrapper::RangeSync(offset, nbytes);
+  Status status = WritableFileWrapper::RangeSync(offset, nbytes);
+  if (status.ok()) {
+    gorocksdb_wf_range_sync(state_, offset, nbytes);
+  }
+  return status;
 }
