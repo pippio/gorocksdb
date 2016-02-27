@@ -14,11 +14,13 @@ using rocksdb::Status;
 using rocksdb::WritableFile;
 using std::unique_ptr;
 
-HookedEnv::HookedEnv(void* state)
+HookedEnv::HookedEnv(int handle)
   : rocksdb::EnvWrapper(rocksdb::Env::Default()),
-    state_(state) { }
+    handle_(handle) { }
 
-HookedEnv::~HookedEnv() { }
+HookedEnv::~HookedEnv() {
+  gorocksdb_env_dtor(handle_);
+}
 
 Status HookedEnv::NewWritableFile(const std::string& fname,
                                   unique_ptr<WritableFile>* result,
@@ -28,9 +30,9 @@ Status HookedEnv::NewWritableFile(const std::string& fname,
 
   if (status.ok()) {
     // Wrap |result| with a hooked implementation.
-    void* file_state = gorocksdb_env_new_writable_file(state_,
+    int wf_handle = gorocksdb_env_new_writable_file(handle_,
         (char*)(fname.c_str()), fname.length());
-    result->reset(new HookedWritableFile(file_state, std::move(*result)));
+    result->reset(new HookedWritableFile(wf_handle, std::move(*result)));
   }
   return status;
 }
@@ -38,7 +40,7 @@ Status HookedEnv::NewWritableFile(const std::string& fname,
 Status HookedEnv::DeleteFile(const std::string& fname) {
   Status status = EnvWrapper::DeleteFile(fname);
   if (status.ok()) {
-    gorocksdb_env_delete_file(state_, (char*)(fname.c_str()), fname.length());
+    gorocksdb_env_delete_file(handle_, (char*)(fname.c_str()), fname.length());
   }
   return status;
 }
@@ -46,7 +48,7 @@ Status HookedEnv::DeleteFile(const std::string& fname) {
 Status HookedEnv::DeleteDir(const std::string& dirname) {
   Status status = EnvWrapper::DeleteDir(dirname);
   if (status.ok()) {
-    gorocksdb_env_delete_dir(state_, (char*)(dirname.c_str()), dirname.length());
+    gorocksdb_env_delete_dir(handle_, (char*)(dirname.c_str()), dirname.length());
   }
   return status;
 }
@@ -55,7 +57,7 @@ Status HookedEnv::RenameFile(const std::string& src,
                              const std::string& target) {
   Status result = EnvWrapper::RenameFile(src, target);
   if (result.ok()) {
-    gorocksdb_env_rename_file(state_,
+    gorocksdb_env_rename_file(handle_,
         (char*)(src.c_str()),
         src.length(),
         (char*)(target.c_str()),
@@ -68,7 +70,7 @@ Status HookedEnv::LinkFile(const std::string& src,
                            const std::string& target) {
   Status result = EnvWrapper::LinkFile(src, target);
   if (result.ok()) {
-    gorocksdb_env_link_file(state_,
+    gorocksdb_env_link_file(handle_,
         (char*)(src.c_str()),
         src.length(),
         (char*)(target.c_str()),
@@ -87,9 +89,9 @@ struct rocksdb_env_t {
   bool is_default;
 };
 
-rocksdb_env_t* gorocksdb_create_hooked_env(void* state) {
+rocksdb_env_t* gorocksdb_create_hooked_env(int handle) {
   rocksdb_env_t* result = new rocksdb_env_t;
-  result->rep = new HookedEnv(state);
+  result->rep = new HookedEnv(handle);
   result->is_default = false;
   return result;
 }

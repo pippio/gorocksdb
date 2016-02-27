@@ -10,8 +10,8 @@
 class HookedEnv : public rocksdb::EnvWrapper {
  public:
 
-  // |state| is an opaque pointer which is passed back into cgo hooks.
-  HookedEnv(void* state);
+  // |handle| is an opaque integer which is passed back into cgo hooks.
+  HookedEnv(int handle);
 
   virtual ~HookedEnv() override;
 
@@ -31,7 +31,7 @@ class HookedEnv : public rocksdb::EnvWrapper {
                                    const std::string& target) override;
  private:
 
-  void* state_;
+  int handle_;
 };
 
 #endif // #ifndef HOOKED_ENV_HPP
