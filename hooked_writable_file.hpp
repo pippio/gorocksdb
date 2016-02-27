@@ -10,8 +10,8 @@
 class HookedWritableFile : public rocksdb::WritableFileWrapper {
  public:
 
-  // |state| is an opaque pointer which is passed back into cgo hooks.
-  HookedWritableFile(void* state, std::unique_ptr<WritableFile> delegate);
+  // |handle| is an opaque integer which is passed back into cgo hooks.
+  HookedWritableFile(int handle, std::unique_ptr<WritableFile> delegate);
 
   virtual ~HookedWritableFile() override;
 
@@ -29,7 +29,7 @@ class HookedWritableFile : public rocksdb::WritableFileWrapper {
 
  private:
 
-  void* state_;
+  int handle_;
 
   // Delegate is exclusively owned by HookedWritableFile.
   std::unique_ptr<rocksdb::WritableFile> delegate_;
