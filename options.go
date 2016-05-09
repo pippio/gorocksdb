@@ -43,6 +43,17 @@ const (
 	WillneedCompactionAccessPattern   = CompactionAccessPattern(3)
 )
 
+// CompactionPriority specifies the file prioritization heuristic.
+type CompactionPri int
+
+// See rocksdb/options.h
+const (
+	ByCompensatedSize CompactionPri = 0x0
+	// First compact files whose data's latest update time is oldest.
+	// Try this if you only update some hot keys in small ranges.
+	OldestLargestSeqFirst CompactionPri = 0x1
+)
+
 // InfoLogLevel describes the log level.
 type InfoLogLevel uint
 
@@ -762,6 +773,12 @@ func (opts *Options) SetBytesPerSync(value uint64) {
 // Default: LevelCompactionStyle
 func (opts *Options) SetCompactionStyle(value CompactionStyle) {
 	C.rocksdb_options_set_compaction_style(opts.c, C.int(value))
+}
+
+// SetCompactionPriority sets the compaction priority.
+// Default: ByCompensatedSize
+func (opts *Options) SetCompactionPriority(pri CompactionPri) {
+	C.gorocksdb_options_set_compaction_priority(opts.c, C.int(pri))
 }
 
 // SetUniversalCompactionOptions sets the options needed
