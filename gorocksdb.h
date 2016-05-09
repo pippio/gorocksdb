@@ -6,6 +6,7 @@
 /* Base */
 
 extern void gorocksdb_destruct_handler(void* state);
+extern void gorocksdb_options_set_compaction_priority(rocksdb_options_t*, int priority);
 
 /* CompactionFilter */
 
