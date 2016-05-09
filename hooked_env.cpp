@@ -1,5 +1,6 @@
 #include "hooked_env.hpp"
 #include "hooked_writable_file.hpp"
+#include "rocksdb/options.h"
 
 #include <iostream>
 
@@ -8,6 +9,7 @@ extern "C" {
 #include "_cgo_export.h"
 }
 
+using rocksdb::Options;
 using rocksdb::EnvOptions;
 using rocksdb::EnvWrapper;
 using rocksdb::Status;
@@ -94,6 +96,13 @@ rocksdb_env_t* gorocksdb_create_hooked_env(int handle) {
   result->rep = new HookedEnv(handle);
   result->is_default = false;
   return result;
+}
+
+// Note: this definition is copied from github.com/facebook/rocksdb/db/c.cc:99
+struct rocksdb_options_t { rocksdb::Options rep; };
+
+void gorocksdb_options_set_compaction_priority(rocksdb_options_t *opts, int priority) {
+  opts->rep.compaction_pri = rocksdb::CompactionPri(priority);
 }
 
 } // extern "C"
