@@ -2,6 +2,7 @@ package gorocksdb
 
 /*
 #cgo CXXFLAGS: -std=c++11
+#include <sys/types.h>
 #include "rocksdb/c.h"
 #include "gorocksdb.h"
 */
