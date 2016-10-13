@@ -25,7 +25,7 @@ class HookedWritableFile : public rocksdb::WritableFileWrapper {
 
  protected:
 
-  virtual rocksdb::Status RangeSync(off_t offset, off_t nbytes) override;
+  virtual rocksdb::Status RangeSync(off_t offset, off_t nbytes);
 
  private:
 
