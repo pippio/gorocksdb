@@ -184,5 +184,5 @@ func (iter *Iterator) Close() {
 }
 
 func parseLenPrefix(b []byte) C.size_t {
-	return C.size_t(b[0]<<24) | C.size_t(b[1]<<16) | C.size_t(b[2]<<8) | C.size_t(b[3]<<0)
+	return C.size_t(b[0])<<24 | C.size_t(b[1])<<16 | C.size_t(b[2])<<8 | C.size_t(b[3])
 }
