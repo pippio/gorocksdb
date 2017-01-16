@@ -31,6 +31,14 @@ func TestIterator(t *testing.T) {
 	ensure.DeepEqual(t, actualKeys, givenKeys)
 }
 
+func TestLenPrefixParsing(t *testing.T) {
+	ensure.True(t, parseLenPrefix([]byte{0x00, 0x00, 0x00, 0x00}) == 0x00000000)
+	ensure.True(t, parseLenPrefix([]byte{0x00, 0x00, 0x02, 0x83}) == 0x00000283)
+	ensure.True(t, parseLenPrefix([]byte{0x01, 0x01, 0x01, 0x01}) == 0x01010101)
+	ensure.True(t, parseLenPrefix([]byte{0xab, 0xcd, 0xef, 0x12}) == 0xabcdef12)
+	ensure.True(t, parseLenPrefix([]byte{0xff, 0xff, 0xff, 0xff}) == 0xffffffff)
+}
+
 func TestIteratorSeeking(t *testing.T) {
 	db := newTestDB(t, "TestIteratorSeeking", nil)
 	defer db.Close()
