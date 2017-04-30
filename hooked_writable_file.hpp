@@ -23,10 +23,6 @@ class HookedWritableFile : public rocksdb::WritableFileWrapper {
 
   virtual rocksdb::Status Fsync() override;
 
- protected:
-
-  virtual rocksdb::Status RangeSync(off_t offset, off_t nbytes) override;
-
  private:
 
   int handle_;
