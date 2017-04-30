@@ -53,11 +53,3 @@ Status HookedWritableFile::Fsync() {
   }
   return status;
 }
-
-Status HookedWritableFile::RangeSync(off_t offset, off_t nbytes) {
-  Status status = WritableFileWrapper::RangeSync(offset, nbytes);
-  if (status.ok()) {
-    gorocksdb_wf_range_sync(handle_, offset, nbytes);
-  }
-  return status;
-}
