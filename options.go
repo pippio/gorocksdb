@@ -98,7 +98,9 @@ func NewNativeOptions(c *C.rocksdb_options_t) *Options {
 // which will be applied on compactions.
 // Default: nil
 func (opts *Options) SetCompactionFilter(value CompactionFilter) {
-	if nc, ok := value.(nativeCompactionFilter); ok {
+	if value == nil {
+		opts.ccf = nil
+	} else if nc, ok := value.(nativeCompactionFilter); ok {
 		opts.ccf = nc.c
 	} else {
 		idx := registerCompactionFilter(value)
