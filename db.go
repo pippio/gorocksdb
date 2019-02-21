@@ -598,14 +598,14 @@ func (db *DB) GetApproximateSizesCF(cf *ColumnFamilyHandle, ranges []Range) []ui
 
 // SetOptions dynamically changes options through the SetOptions API.
 func (db *DB) SetOptions(keys, values []string) error {
-	num_keys := len(keys)
+	numKeys := len(keys)
 
-	if num_keys == 0 {
+	if numKeys == 0 {
 		return nil
 	}
 
-	cKeys := make([]*C.char, num_keys)
-	cValues := make([]*C.char, num_keys)
+	cKeys := make([]*C.char, numKeys)
+	cValues := make([]*C.char, numKeys)
 	for i := range keys {
 		cKeys[i] = C.CString(keys[i])
 		cValues[i] = C.CString(values[i])
@@ -615,7 +615,7 @@ func (db *DB) SetOptions(keys, values []string) error {
 
 	C.rocksdb_set_options(
 		db.c,
-		C.int(num_keys),
+		C.int(numKeys),
 		&cKeys[0],
 		&cValues[0],
 		&cErr,
