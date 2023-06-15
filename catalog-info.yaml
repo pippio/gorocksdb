@@ -1,0 +1,11 @@
+# BEGIN TERRAFORM MANAGED BLOCK
+"apiVersion": "backstage.io/v1alpha1"
+"kind": "Location"
+"metadata":
+  "annotations":
+    "github.com/project-slug": "LiveRamp/gorocksdb"
+  "description": "gorocksdb is a Go wrapper for RocksDB"
+  "name": "gorocksdb"
+  "tags": []
+"spec": {}
+# END TERRAFORM MANAGED BLOCK
